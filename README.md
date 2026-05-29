@@ -196,5 +196,6 @@ Through this project, the following concepts were learned:
 # Author
 
 Athul Raj  
-B.Tech Computer Science and Engineering  
-JAIN (Deemed-to-be University)
+
+GitHub: @athulraj13
+Email: [athul052005@gmail.com]y)
