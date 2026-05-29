@@ -197,6 +197,5 @@ Through this project, the following concepts were learned:
 
 Athul Raj  
 
-GitHub: @athulraj13
-
-Email: [athul052005@gmail.com])
+- GitHub: [@athulraj13](https://github.com/athulraj13)
+- Email: [athul052005@gmail.com]
