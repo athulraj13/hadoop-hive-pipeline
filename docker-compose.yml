@@ -1,0 +1,79 @@
+version: "3.8"
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: hp-namenode
+    restart: always
+    ports:
+      - "29870:9870"
+      - "29000:9000"
+    environment:
+      - CLUSTER_NAME=hive-pipeline
+    env_file:
+      - ./hadoop.env
+    volumes:
+      - hp_namenode_data:/hadoop/dfs/name
+    networks:
+      - hive-net
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: hp-datanode
+    restart: always
+    environment:
+      - SERVICE_PRECONDITION=hp-namenode:9870
+    env_file:
+      - ./hadoop.env
+    volumes:
+      - hp_datanode_data:/hadoop/dfs/data
+    networks:
+      - hive-net
+
+  hive-metastore-db:
+    image: postgres:13
+    container_name: hp-metastore-db
+    environment:
+      POSTGRES_DB: metastore
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive123
+    volumes:
+      - hp_postgres_data:/var/lib/postgresql/data
+    networks:
+      - hive-net
+
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: hp-metastore
+    restart: always
+    env_file:
+      - ./hadoop.env
+    environment:
+      - SERVICE_PRECONDITION=hp-namenode:9870 hp-datanode:9864 hp-metastore-db:5432
+    command: /opt/hive/bin/hive --service metastore
+    ports:
+      - "19083:9083"
+    networks:
+      - hive-net
+
+  hive-server:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: hp-hive-server
+    restart: always
+    env_file:
+      - ./hadoop.env
+    environment:
+      - SERVICE_PRECONDITION=hp-metastore:9083
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    networks:
+      - hive-net
+
+networks:
+  hive-net:
+    driver: bridge
+
+volumes:
+  hp_namenode_data:
+  hp_datanode_data:
+  hp_postgres_data:
